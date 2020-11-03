@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="change-shipping-status-config" doc:name="HTTP Listener config" doc:id="c572d571-37ab-46f5-8a1d-2c16d1ba1ce1" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="b0cdf966-2c00-49ca-8914-0eee5b895268" name="change-shipping-status-api-config" api="api\change-shipping-status.raml">
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/changeshippingstatus" action="post" flow-ref="post:\changeshippingstatus" />
+		</apikit:flow-mappings>
+	</apikit:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="bc01ebb6-e24c-4626-82fb-7bbc8b62657d" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" database="s-cart" />
+	</db:config>
+	<flow name="change-shipping-status-console" doc:id="ae4c1c68-424e-4617-ab50-a6829b13c442" >
+		<http:listener doc:name="Listener" doc:id="f32f76f4-95ed-44d4-9093-2d77464b1c58" config-ref="change-shipping-status-config" path="console/*"/>
+		<apikit:console doc:name="APIkit Console" doc:id="9ff42331-2053-468b-8b13-cc547607698e" config-ref="change-shipping-status-api-config"/>
+	</flow>
+	<flow name="change-shipping-status-api" doc:id="13267c9a-5368-4d10-a563-cc70f30c48e3" >
+		<http:listener doc:name="Listener" doc:id="e87d2f1c-1a92-4614-b243-9e5add5b061f" config-ref="change-shipping-status-config" path="api/*"/>
+		<apikit:router doc:name="APIkit Router" doc:id="1d69be93-b877-4d53-ae5c-469d036ed86c" config-ref="change-shipping-status-api-config"/>
+	</flow>
+	<flow name="post:\changeshippingstatus" doc:id="d73610cf-b544-4ce9-a29e-8871f3361a8d" >
+		<ee:transform doc:name="Transform Message" doc:id="c7dded3f-6977-4324-b8be-075c1ca778b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	tracking_number: payload.tracking_number,
+	status: payload.status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="Update" doc:id="f66a7808-9ab7-425c-880f-5a7fe44325d6" config-ref="Database_Config1">
+			<db:sql ><![CDATA[UPDATE demo_shop_order SET shipping_status = :status WHERE tracking_number= :tracking_number]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{"tracking_number":payload.tracking_number,"status":payload.status}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="663531b2-432d-4689-a8c1-71f5e5e5cab9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Change Shipping Status Success!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

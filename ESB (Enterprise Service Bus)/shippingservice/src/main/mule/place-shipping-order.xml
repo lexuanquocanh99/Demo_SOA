@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="place-shipping-order-config" doc:name="HTTP Listener config" doc:id="3f3ba53c-eae1-411b-815d-924c83f009c9">
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="2b121963-ad90-4c7b-816b-8f2a16e27876" name="place-shipping-order-api-config" api="api\placeshippingorder.raml">
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/placeshippingorder" action="post" content-type="applicaton/json" flow-ref="testFlow" />
+		</apikit:flow-mappings>
+	</apikit:config>
+	<flow name="place-shipping-order-console" doc:id="acb0031b-e045-44de-906d-db514489caeb" >
+		<http:listener doc:name="Listener" doc:id="bb6c76b9-a610-4bc2-ac7f-b5d7d3ca01b8" config-ref="place-shipping-order-config" path="console/*"/>
+		<apikit:console doc:name="APIkit Console" doc:id="377a071b-6f0b-4b41-b60b-6c25b6ca008f" config-ref="place-shipping-order-api-config"/>
+	</flow>
+	<flow name="place-shipping-order-api" doc:id="f0ac7d62-5c21-4be8-89de-90013608332b" >
+		<http:listener doc:name="Listener" doc:id="462fd8fd-ab47-4894-837a-e440e42c53c2" config-ref="place-shipping-order-config" path="api/*"/>
+		<apikit:router doc:name="APIkit Router" doc:id="1f989b3f-26c4-4df6-bc5c-78d9e82d4d94" config-ref="place-shipping-order-api-config"/>
+	</flow>
+	<flow name="post:\placeshippingorder" doc:id="8ffd7b85-2f97-4be0-a465-8694265a59f5" >
+		<ee:transform doc:name="Transform Message" doc:id="af3d5ba5-fb23-480a-818d-74d6fddb29b6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	tracking_number: randomInt(1000)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

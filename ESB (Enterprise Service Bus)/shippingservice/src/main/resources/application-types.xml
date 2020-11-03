@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="payload" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    order_id:
+        type: number]]></types:shape>
+    </types:type>
+    <types:type name="response" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    order_id:
+        type: number
+    shipping_status:
+        type: number]]></types:shape>
+    </types:type>
+    <types:type name="payload1" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    tracking_number:
+        type: string
+    status:
+        type: number]]></types:shape>
+    </types:type>
+    <types:type name="responseShippingId" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    tracking_number:
+        type: string
+    order_id:
+        type: number]]></types:shape>
+    </types:type>
+    <types:type name="checkstatus" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    tracking_number:
+        type: string]]></types:shape>
+    </types:type>
+    <types:type name="checkStatusResponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    data: object[]       ]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#f5a966ab-4598-4a5e-a513-04120258a7d4">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="checkstatus"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="checkstatus"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#841d2809-11fe-4ef6-8b09-ae9c282c80fc">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="checkStatusResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c23135bc-0f57-4207-a39a-1a956fab77e2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="checkstatus"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c7dded3f-6977-4324-b8be-075c1ca778b8">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="payload1"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="payload1"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f66a7808-9ab7-425c-880f-5a7fe44325d6">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="inputParameters" type="payload1"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#72f395b3-91d3-4bae-a62c-868e772410b1">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="responseShippingId"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5d53d32c-a691-4b33-b0fc-3f8ee09b608b"/>
+  <types:enrichment select="#0a4cbbc6-4680-4323-a1a0-a839d57c2f9a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="checkstatus"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#af3d5ba5-fb23-480a-818d-74d6fddb29b6"/>
+</types:mule>

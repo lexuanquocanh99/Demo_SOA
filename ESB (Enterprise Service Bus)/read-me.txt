@@ -1,0 +1,4 @@
+1. First, you need read the artical https://www.tutorialspoint.com/mulesoft/mulesoft_anypoint_studio.htm to How to install AnypointStudio
+2. Copy shippingservice to the workspace of AnypointStudio
+
+Note: AnypointStudio Version 7.6 - Java 1.8.0_271

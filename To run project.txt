@@ -1,0 +1,2 @@
+To run the SOA Demo you need turn on the shippingservice in AnypointStudio and xampp.
+Access http://localhost/s-cart/public/ and http://localhost/s-cart/public/demo_admin.

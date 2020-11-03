@@ -1,0 +1,5 @@
+1. First you need install XAMPP ver 3.2.4 - PHP ver 7.4.10
+2. Copy s-cart to xampp/htdocs
+3. Create database name: s-cart
+4. Run xampp onpen localhost/s-cart/public/ to go to the storefont.
+5. Open localhost/s-cart/public/demo_admin to go the S-cart Admin (Backend Dashboard)
